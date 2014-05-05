@@ -1,0 +1,6 @@
+SET(external_depends GLEW GLFW OPENGL )
+SET(internal_depends glew glfw )
+SET(include_dirs ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${OPENGL_INCLUDE_DIRS} opengl raytracer)
+SET(link_libs ${GLEW_LIBRARY} ${GLFW_LIBRARY} ${OPENGL_LIBRARIES} opengl raytracer)
+SET(library_defs )
+CG_ADD_MODULE()
