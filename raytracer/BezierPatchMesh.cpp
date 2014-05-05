@@ -104,7 +104,7 @@ namespace rt
 	  }
 	  return f;
   }
-
+  /*
   BezierPatchMesh::BezierPatchSample BezierPatchMesh::sample(double u, double v) const
   {
     BezierPatchSample ret;
@@ -147,6 +147,80 @@ namespace rt
     ret.position = x;
     ret.normal = Vec3d();
     return ret;
+  }
+  */
+  Vec3d BezierPatchMesh::deCasteljau(Vec3d b, double t, size_t r, size_t i) const
+  {
+	  if (r == 0) {
+		  return controlPoint(r, i);
+	  }
+	  else {
+		  return ((1 - t) * (deCasteljau(b, t, (r - 1), i) + (t * deCasteljau(b, t, (r - 1), (i + 1)))));
+	  }
+  }
+
+  Vec3d BezierPatchMesh::deCasteljauQ(Vec3d b, double t, size_t r, size_t i, std::vector<Vec3d> q) const
+  {
+	  if (r == 0) {
+		  return q.at(i);
+	  }
+	  else {
+		  return ((1 - t) * (deCasteljauQ(b, t, (r - 1), i, q) + (t * deCasteljauQ(b, t, (r - 1), (i + 1), q))));
+	  }
+  }
+
+  BezierPatchMesh::BezierPatchSample BezierPatchMesh::sample(double u, double v) const
+  {
+	  BezierPatchSample ret;
+	  ret.uv = Vec2d(u, v);
+
+	  //std::vector<Vec3d> P = mControlPoints;
+
+	  size_t m = mM;
+	  size_t n = mN;
+
+	  //controlPoints(i,j)
+	  std::vector<Vec3d> q;
+
+	  Vec3d p;
+
+	  for (int i = 0; i < m; ++i) {
+
+		  for (size_t r = 1; r <= n; ++r) {
+			  for (size_t j = 0; j <= (n - r); ++j) { // 3 - 1 = 2, 3 - 2 = 1, 3 - 3 = 0
+				  q[i] = deCasteljau(controlPoint(j, 0), v, i + 1, j);
+			  }
+		  }
+
+
+		  for (int j = 0; j < n; ++j) {
+
+		  }
+
+		  deCasteljauQ(q[i], u, , , q)
+
+	  }
+
+
+
+
+
+
+	  for (size_t r = 1; r <= n; ++r) {
+		  for (size_t i = 0; i <= (n + r); ++i) {
+			  p = deCasteljauQ(temp[i], u, r, i, temp);
+		  }
+	  }
+
+	  // Programming TASK 2: implement this method
+	  // You need to compute ret.position and ret.normal!
+
+	  // This data will be used within the initialize() function for the 
+	  // triangle mesh construction.
+
+	  ret.position = p;
+	  ret.normal = Vec3d();
+	  return ret;
   }
 
 } //namespace rt
